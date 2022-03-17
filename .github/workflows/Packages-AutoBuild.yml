@@ -62,7 +62,7 @@ jobs:
         echo "UPLOAD_FIRMWARE_FOR_RELEASE=${UPLOAD_FIRMWARE_FOR_RELEASE}" >> $GITHUB_ENV
         echo "UPLOAD_FIRMWARE_TO_COWTRANSFER=${UPLOAD_FIRMWARE_TO_COWTRANSFER}" >> $GITHUB_ENV
         echo "UPLOAD_FIRMWARE_TO_WETRANSFER=${UPLOAD_FIRMWARE_TO_WETRANSFER}" >> $GITHUB_ENV
-        if [ ${{matrix.target}} == "redmi-ac2100" ]; then
+        if [ ${{matrix.target}} == "ac2100" ]; then
             echo "MTARGET=mipsel_24kc" >> $GITHUB_ENV
         elif [ ${{matrix.target}} == "x86_64" ]; then
             echo "MTARGET=x86_64" >> $GITHUB_ENV
@@ -70,6 +70,8 @@ jobs:
             echo "MTARGET=aarch64_cortex-a72" >> $GITHUB_ENV
          elif [ ${{matrix.target}} == "nanopi-r2s" ]; then
             echo "MTARGET=aarch64_generic" >> $GITHUB_ENV
+         elif [ ${{matrix.target}} == "N1" ]; then
+            echo "MTARGET=aarch64_cortex-a53" >> $GITHUB_ENV
         fi
 
     - name: Trigger Packages Update
@@ -89,7 +91,7 @@ jobs:
         DEBIAN_FRONTEND: noninteractive
       run: |
         ( sudo -E apt-get -qq update
-        sudo -E apt-get -qq install build-essential asciidoc binutils bzip2 gawk gettext git libncurses5-dev libz-dev patch python3 python2.7 unzip zlib1g-dev lib32gcc1 libc6-dev-i386 subversion flex uglifyjs gcc-multilib g++-multilib p7zip p7zip-full msmtp libssl-dev texinfo libglib2.0-dev xmlto qemu-utils upx-ucl libelf-dev autoconf automake libtool autopoint device-tree-compiler ccache xsltproc rename antlr3 gperf wget curl swig rsync
+        sudo -E apt-get -qq install build-essential asciidoc binutils bzip2 gawk gettext git libncurses5-dev patch python3 python2.7 unzip zlib1g-dev lib32gcc-s1 libc6-dev-i386 subversion flex uglifyjs gcc-multilib g++-multilib p7zip p7zip-full msmtp libssl-dev texinfo libglib2.0-dev xmlto qemu-utils upx-ucl libelf-dev autoconf automake libtool autopoint device-tree-compiler ccache xsltproc rename antlr3 gperf wget curl swig rsync bc
         sudo -E apt-get -qq purge azure-cli ghc* zulu* hhvm llvm* firefox powershell openjdk* dotnet* google* mysql* php* android*
         sudo rm -rf /etc/apt/sources.list.d/* /usr/share/dotnet /usr/local/lib/android /opt/ghc
         sudo -E apt-get -qq autoremove --purge
@@ -105,14 +107,17 @@ jobs:
 
     - name: Clone source code
       run: |
-        if [ ${{matrix.target}} == "redmi-ac2100" ]; then
-            wget -cO sdk.tar.xz https://downloads.openwrt.org/releases/21.02-SNAPSHOT/targets/ramips/mt7621/openwrt-sdk-21.02-SNAPSHOT-ramips-mt7621_gcc-8.4.0_musl.Linux-x86_64.tar.xz
-        elif [ ${{matrix.target}} == "x86_64" ]; then
-            wget -cO sdk.tar.xz https://downloads.openwrt.org/releases/21.02-SNAPSHOT/targets/x86/64/openwrt-sdk-21.02-SNAPSHOT-x86-64_gcc-8.4.0_musl.Linux-x86_64.tar.xz
+        REPO_BRANCH="$(curl -s https://api.github.com/repos/openwrt/openwrt/tags | jq -r '.[].name' | grep v21 | head -n 1 | sed -e 's/v//')"
+        if [ ${{matrix.target}} == "ac2100" ]; then
+            curl -fL -m 60 -o sdk.tar.xz https://downloads.openwrt.org/releases/$REPO_BRANCH/targets/ramips/mt7621/openwrt-sdk-$REPO_BRANCH-ramips-mt7621_gcc-8.4.0_musl.Linux-x86_64.tar.xz
+        elif [[ ${{matrix.target}} == "x86_64" ]]; then
+            curl -fL -m 60 -o sdk.tar.xz https://downloads.openwrt.org/releases/$REPO_BRANCH/targets/x86/64/openwrt-sdk-$REPO_BRANCH-x86-64_gcc-8.4.0_musl.Linux-x86_64.tar.xz || curl -fL -m 60 -o sdk.tar.xz https://openwrt.tetaneutral.net/releases/21.02-SNAPSHOT/targets/x86/64/openwrt-sdk-21.02-SNAPSHOT-x86-64_gcc-8.4.0_musl.Linux-x86_64.tar.xz
         elif [[ ${{matrix.target}} == "nanopi-r2s" ]]; then
-            wget -cO sdk.tar.xz https://downloads.openwrt.org/releases/21.02-SNAPSHOT/targets/rockchip/armv8/openwrt-sdk-21.02-SNAPSHOT-rockchip-armv8_gcc-8.4.0_musl.Linux-x86_64.tar.xz
-        elif [[ ${{matrix.target}} =~ "Rpi-4B" ]]; then
-            wget -cO sdk.tar.xz https://downloads.openwrt.org/releases/21.02-SNAPSHOT/targets/bcm27xx/bcm2711/openwrt-sdk-21.02-SNAPSHOT-bcm27xx-bcm2711_gcc-8.4.0_musl.Linux-x86_64.tar.xz
+            curl -fL -m 60 -o sdk.tar.xz https://downloads.openwrt.org/releases/$REPO_BRANCH/targets/rockchip/armv8/openwrt-sdk-$REPO_BRANCH-rockchip-armv8_gcc-8.4.0_musl.Linux-x86_64.tar.xz || curl -fL -m 60 -o sdk.tar.xz https://openwrt.tetaneutral.net/releases/21.02-SNAPSHOT/targets/rockchip/armv8/openwrt-sdk-21.02-SNAPSHOT-rockchip-armv8_gcc-8.4.0_musl.Linux-x86_64.tar.xz
+        elif [[ ${{matrix.target}} == "Rpi-4B" ]]; then
+            curl -fL -m 60 -o sdk.tar.xz https://downloads.openwrt.org/releases/$REPO_BRANCH/targets/bcm27xx/bcm2711/openwrt-sdk-$REPO_BRANCH-bcm27xx-bcm2711_gcc-8.4.0_musl.Linux-x86_64.tar.xz || curl -fL -m 60 -o sdk.tar.xz https://openwrt.tetaneutral.net/releases/21.02-SNAPSHOT/targets/bcm27xx/bcm2711/openwrt-sdk-21.02-SNAPSHOT-bcm27xx-bcm2711_gcc-8.4.0_musl.Linux-x86_64.tar.xz
+        elif [[ ${{matrix.target}} == "N1" ]]; then
+            curl -fL -m 60 -o sdk.tar.xz https://downloads.openwrt.org/releases/$REPO_BRANCH/targets/armvirt/64/openwrt-sdk-$REPO_BRANCH-armvirt-64_gcc-8.4.0_musl.Linux-x86_64.tar.xz || curl -fL -m 60 -o sdk.tar.xz https://openwrt.tetaneutral.net/releases/21.02-SNAPSHOT/targets/armvirt/64/openwrt-sdk-21.02-SNAPSHOT-armvirt-64_gcc-8.4.0_musl.Linux-x86_64.tar.xz
         fi
 
     - name: Free up disk space
@@ -124,53 +129,42 @@ jobs:
         ln -sf /mnt/openwrt/dl openwrt/dl
         ln -sf /mnt/openwrt/build_dir/hostpkg openwrt/build_dir/hostpkg
         ln -sf /mnt/openwrt/bin openwrt/bin
-
-    - name: Load && Update feeds
+    
+    - name: Load custom configuration
       run: |
         mkdir openwrt
         tar -xJf sdk.tar.xz -C openwrt
         rm -Rf sdk.tar.xz
         cd openwrt
         cp -rf ./openwrt-sdk*/. ./ || true
-        sed -i '/\(tools\|toolchain\)\/Makefile/d' Makefile
-        if [ -f /usr/bin/python ]; then
-          ln -sf /usr/bin/python staging_dir/host/bin/python
-        else
-          ln -sf /usr/bin/python3 staging_dir/host/bin/python
-        fi
-        ln -sf /usr/bin/python3 staging_dir/host/bin/python3
-        mv -f ../devices ./
+        cp -rf ../devices ./
         cp -rf devices/common/. ./
         cp -rf devices/${{matrix.target}}/. ./
+        chmod -R +x devices/* || true
+        sed -i '/	refresh_config();/d' scripts/feeds
         ./scripts/feeds update -a
-
-    - name: Load custom configuration
-      run: |
-        cd openwrt
-        chmod +x devices/common/* || true
-        chmod +x devices/${{matrix.target}}/* || true
-        cp -f devices/common/.config .config
+        find "devices/common/patches" -type f -name '*.b.patch' -print0 | sort -z | xargs -I % -t -0 -n 1 sh -c "cat '%'  | patch -d './' -p1 -E --forward --no-backup-if-mismatch"
         /bin/bash "devices/common/custom.sh"
         if [ -f "devices/${{matrix.target}}/custom.sh" ]; then
           /bin/bash "devices/${{matrix.target}}/custom.sh"
+        fi
+        find "devices/common/patches" -type f -name '*.patch' ! -name '*.b.patch' -print0 | sort -z | xargs -I % -t -0 -n 1 sh -c "cat '%'  | patch -d './' -p1 -E --forward --no-backup-if-mismatch"
+        if [ -n "$(ls -A "devices/${{matrix.target}}/patches" 2>/dev/null)" ]; then
+          find "devices/${{matrix.target}}/patches" -type f -name '*.patch' -print0 | sort -z | xargs -I % -t -0 -n 1 sh -c "cat '%'  | patch -d './' -p1 -E --forward --no-backup-if-mismatch"
+        fi
+        cp -Rf ./diy/* ./ || true
+        if [ -f "devices/${{matrix.target}}/default-settings" ]; then
+          echo >> package/*/*/my-default-settings/files/etc/uci-defaults/99-default-settings
+          cat devices/${{matrix.target}}/default-settings >> package/*/*/my-default-settings/files/etc/uci-defaults/99-default-settings
         fi
         if [ -f "devices/${{matrix.target}}/.config" ]; then
           echo >> .config
           cat devices/${{matrix.target}}/.config >> .config
         fi
-        cp -Rf ./diy/* ./ || true
-        if [[ ${{github.actor}} == "kiddin9" ]]; then
-          sed -i "s/index()/index()\nif luci.sys.exec(\"cat \/etc\/openwrt_release | grep -o -E ^DISTRIB_DESCRIPTION='.*(GaryPang|Kiddin)'\") == \"\" then return end/g" package/feeds/custom/luci-app*/luasrc/controller/*.lua
-        fi
+        #if [[ ${{github.actor}} == "kiddin9" ]]; then
+          #sed -i "s/index()/index()\nif luci.sys.exec(\"cat \/etc\/openwrt_release | grep -o -E ^DISTRIB_DESCRIPTION='.*(GaryPang|Kiddin)'\") == \"\" then return end/g" package/feeds/kiddin9/luci-app*/luasrc/controller/*.lua
+        #fi
 
-    - name: Apply patches
-      run: |
-        cd openwrt
-        find "devices/common/patches" -type f ! -path 'devices/common/patches/china_mirrors.patch' -name '*.patch' -print0 | sort -z | xargs -I % -t -0 -n 1 sh -c "cat '%'  | patch -d './' -p1 -E --forward --no-backup-if-mismatch" || true
-        if [ -n "$(ls -A "devices/${{matrix.target}}/patches" 2>/dev/null)" ]; then
-          find "devices/${{matrix.target}}/patches" -type f -name '*.patch' -print0 | sort -z | xargs -I % -t -0 -n 1 sh -c "cat '%'  | patch -d './' -p1 -E --forward --no-backup-if-mismatch" || true
-        fi
-      
     - name: SSH connection to Actions
       uses: kiddin9/debugger-action@master
       if: contains(github.event.action, 'ssh')
@@ -179,40 +173,53 @@ jobs:
       run: |
         cd openwrt
         make defconfig
-        mv -f package/feeds/custom custom.b
-        mkdir package/feeds/custom
-        mv -f custom.b/{wxbase,lib*,rapidjson,jpcre2,quickjspp,qtbase,qttools,rblibtorrent} package/feeds/custom/
+        mv -f package/feeds/kiddin9 kiddin9.b
+        mv -f feeds/packages/lang feeds/packages/lang.b
+        mv -f feeds/packages feeds/packages.b
+        mkdir package/feeds/kiddin9
+        cp -rf kiddin9.b/{wxbase,lib*,rapidjson,jpcre2,toml11,quickjspp,qtbase,qttools,rblibtorrent} package/feeds/kiddin9/
 
     - name: Compile the firmware
-      if: contains(github.event.action, 'aarch64') || contains(github.event.action, 'r2s') || contains(github.event.action, 'x86_64') || contains(github.event.action, 'mipsel') || contains(github.event.action, 'ac2100') || contains(github.event.action, 'Rpi-4B')
       run: |
         cd openwrt
           echo -e "$(($(nproc)+1)) thread compile"
-          for ipk in $(ls custom.b); do
+          fpkg="$(echo "${{github.event.action}}" | sed -e 's/\(aarch64_generic\|x86_64\|aarch64_cortex-a72\|nanopi-r2s\|Rpi-4B\|N1\|ac2100\| [0-9][0-9.]*\| ssh\| noser\| cw\)//g')"
+          fpkg="$(echo "$fpkg" | sed -e 's/ //g')"
+          during="$(echo "${{github.event.action}}" | grep -o -E ' [0-9][0-9.]*' | sed -e 's/ //')"
+          function comp(){
+             cp -rf kiddin9.b/$ipk package/feeds/kiddin9/
+             if [[ $ipk != luci-* ]]; then
+              mv -f feeds/packages.b feeds/packages
+              [ "$(grep -E "(PKG_BUILD_DEPENDS|packages/lang|meson.mk)" package/feeds/kiddin9/$ipk/Makefile)" ] && mv feeds/packages/lang.b feeds/packages/lang
+             fi
+             make package/$ipk/compile -j$(($(nproc)+1)) || make package/$ipk/compile V=s >>error_$ipk.log 2>&1 || true
+             if [[ $ipk != luci-* ]]; then
+              mv feeds/packages/lang feeds/packages/lang.b || true
+              mv -f feeds/packages feeds/packages.b
+              rm -f package/feeds/kiddin9/$ipk
+             fi
+            }
+          for ipk in $(ls kiddin9.b | grep -E "$fpkg"); do
             echo $ipk
-            if [[ $ipk == luci-* ]]; then
-              gitdate=$(curl -H "Authorization: token ${{ secrets.REPO_TOKEN }}" -s "https://api.github.com/repos/kiddin9/openwrt-packages/commits?path=$ipk&per_page=1" | jq -r '.[0].commit.committer.date')
+            if [[ "$fpkg" && ! "$during" ]]; then
+              comp
             else
-              gitdate=$(curl -H "Authorization: token ${{ secrets.REPO_TOKEN }}" -s "https://api.github.com/repos/kiddin9/openwrt-packages/commits?path=$ipk/Makefile&per_page=1" | jq -r '.[0].commit.committer.date')
-            fi
-            if [ $gitdate != null ]; then
-              gitdate=$(date -d "$gitdate" +%s)
-              now=$(date -d "$(date '+%Y-%m-%d %H:%M:%S')" +%s)
-              if [[ $(expr $gitdate + 90000) > $now ]]; then
-                cp -rf custom.b/$ipk package/feeds/custom/
-                make package/$ipk/compile -j$(($(nproc)+1)) || make package/$ipk/compile V=s >>error_$ipk.log 2>&1 || true
+              gitdate=$(curl -H "Authorization: token ${{ secrets.REPO_TOKEN }}" -s "https://api.github.com/repos/kiddin9/openwrt-packages/commits?path=$ipk&per_page=1" | jq -r '.[0].commit.committer.date')
+              if [ $gitdate != null ]; then
+                gitdate=$(date -d "$gitdate" +%s)
+                now=$(date -d "$(date '+%Y-%m-%d %H:%M:%S')" +%s)
+                [ "$during" ] || during="1.05"
+                durings=`echo "$during*60*60*24" | bc`
+                if [[ $(($gitdate + ${durings%.*})) -gt $now ]]; then
+                echo "$gitdate"
+                echo "${durings%.*}"
+                echo "$now"
+                  comp
+                fi
               fi
             fi
           done
         echo "status=success" >> $GITHUB_ENV
-
-    - name: Compile single package
-      if: contains(github.event.action, 'aarch64') == false && contains(github.event.action, 'r2s') == false && contains(github.event.action, 'x86_64') == false && contains(github.event.action, 'mipsel') == false && contains(github.event.action, 'ac2100') == false && contains(github.event.action, 'Rpi-4B') == false
-      run: |
-        cd openwrt
-        cp -rf custom.b/${{ github.event.action }} package/feeds/custom/
-          echo -e "$(($(nproc)+1)) thread compile"
-          make package/${{ github.event.action }}/compile -j$(($(nproc)+1)) || make package/${{ github.event.action }}/compile -j1 V=s
 
     - name: Check space usage
       run: df -hT
@@ -221,15 +228,15 @@ jobs:
       id: organize
       run: |
         mkdir packages
-        cp -Rf openwrt/bin/packages/*/custom/* packages/ || true
+        mv -f openwrt/bin/packages/*/kiddin9/* packages || true
+        mv -f openwrt/.config packages/ || true
+        mv -f openwrt/bin/targets/*/*/packages/base-files* packages/ || true
         # cp -Rf openwrt/bin/packages/*/packages/python3* packages/
         echo "FIRMWARE=$PWD/packages" >> $GITHUB_ENV
         Emoji=("🎉" "🤞" "✨" "🎁" "🎈" "🎄" "🎨" "💋" "🍓" "🍕" "🍉" "💐" "🌴" "🚀" "🛸" "🗽" "⛅" "🌈" "🔥" "⛄" "🐶" "🏅" "🦄" "🐤")
-        RANDOM=$$$(date +%s)
-        rand=$[$RANDOM % ${#Emoji[@]}]
-        echo "EMOJI=${Emoji[$rand]}" >> $GITHUB_ENV
+        echo "EMOJI=${Emoji[$[$RANDOM % ${#Emoji[@]}]]}" >> $GITHUB_ENV
         if [[ $(ls -l openwrt/error* | grep "^-" | wc -l) -le 0 ]]; then
-           echo "NAME=${{ env.date2 }} ${{ env.MTARGET }} ${{ env.EMOJI }}" >> $GITHUB_ENV
+           echo "NAME=${Emoji[$[$RANDOM % ${#Emoji[@]}]]} ${{ env.date2 }} ${{ env.MTARGET }} ${{ env.EMOJI }}" >> $GITHUB_ENV
         else
            echo "NAME=❌ ${{ env.date2 }} ${{ env.MTARGET }} ❌" >> $GITHUB_ENV
         fi
@@ -266,7 +273,7 @@ jobs:
         [ ${{ env.NOTICE }} ] && echo -e "${{ env.NOTICE }}" >> release.txt || true
 
     - name: Upload packages for release
-      uses: softprops/action-gh-release@v1
+      uses: softprops/action-gh-release@master
       continue-on-error: true
       if: env.REPO_TOKEN && env.UPLOAD_FIRMWARE_FOR_RELEASE == 'true'
       env:
@@ -308,7 +315,7 @@ jobs:
         script: |
           # cp -R /www/wwwroot/op.supes.top/packages/keep/common/* /www/wwwroot/op.supes.top/packages/${{ env.MTARGET }}/
           # cp -R /www/wwwroot/op.supes.top/packages/keep/${{ env.MTARGET }}/* /www/wwwroot/op.supes.top/packages/${{ env.MTARGET }}/
-          opkg ${{ env.MTARGET }}
+          opkg ${{ env.MTARGET }} &
 
     - name: WeChat notification
       continue-on-error: true
@@ -323,6 +330,7 @@ jobs:
 
     - name: Delete workflow runs
       uses: GitRML/delete-workflow-runs@main
+      continue-on-error: true
       with:
         retain_days: 6
         keep_minimum_runs: 1
