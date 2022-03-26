@@ -41,7 +41,7 @@ jobs:
           [ "$during" ] || during="1.05"
           durings=`echo "$during*60*60*24" | bc`
           gitdate=$(date -d "$gitdate" +%s)
-          now=$(date -d "$(date '+%Y-%m-%d %H:%M:%S')" +%s)
+          now=$(date -d "$(date)" +%s)
           [ "$during" ] || during="1.05"
           durings=`echo "$during*60*60*24" | bc`
           if [[ $(expr $gitdate + ${durings%.*}) -lt $now ]]; then
