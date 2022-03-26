@@ -209,10 +209,9 @@ jobs:
                 now=$(date -d "$(date '+%Y-%m-%d %H:%M:%S')" +%s)
                 [ "$during" ] || during="1.05"
                 durings=`echo "$during*60*60*24" | bc`
-                if [[ $(($gitdate + ${durings%.*})) -gt $now ]]; then
-                echo "$gitdate"
                 echo "${durings%.*}"
-                echo "$now"
+                exit;
+                if [[ $(($gitdate + ${durings%.*})) -gt $now ]]; then
                   comp
                 fi
               fi
