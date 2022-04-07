@@ -291,7 +291,7 @@ jobs:
         path: ${{ env.FIRMWARE }}
 
     - name: deploy files to server
-      uses: easingthemes/ssh-deploy@main
+      uses: easingthemes/ssh-deploy@v2.2.11
       if: env.SSH_PRIVATE_KEY && ! contains(github.event.action, 'noser')
       with:
         SSH_PRIVATE_KEY: ${{ env.SSH_PRIVATE_KEY }}
