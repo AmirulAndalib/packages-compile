@@ -193,7 +193,7 @@ jobs:
              fi
              make package/$ipk/compile -j$(($(nproc)+1)) || make package/$ipk/compile V=s >>error_$ipk.log 2>&1 || true
              if [[ $ipk != luci-* ]]; then
-              mv feeds/packages/lang feeds/packages/lang.b || true
+              mv -f feeds/packages/lang feeds/packages/lang.b || true
               mv -f feeds/packages feeds/packages.b
               rm -f package/feeds/kiddin9/$ipk
              fi
