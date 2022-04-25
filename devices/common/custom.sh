@@ -21,7 +21,7 @@ rm -Rf feeds/base/package/network/!(services|utils)
 rm -Rf feeds/base/package/network/services/!(ppp)
 rm -Rf feeds/base/package/network/utils/!(iwinfo|iptables)
 rm -Rf feeds/base/package/utils/!(util-linux|lua)
-rm -Rf feeds/base/package/system/!(opkg|ubus|uci)
+rm -Rf feeds/base/package/system/!(opkg|ubus|uci|ca-certificates)
 
 ./scripts/feeds update -a
 ./scripts/feeds install -a -p kiddin9
