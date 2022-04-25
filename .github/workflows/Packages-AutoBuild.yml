@@ -195,7 +195,7 @@ jobs:
              if [[ $ipk != luci-* ]]; then
               mv -f feeds/packages/lang feeds/packages/lang.b || true
               mv -f feeds/packages feeds/packages.b
-              rm -f package/feeds/kiddin9/$ipk
+              rm -rf package/feeds/kiddin9/$ipk
              fi
             }
           for ipk in $(ls kiddin9.b | grep -E "$fpkg"); do
