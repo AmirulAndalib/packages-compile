@@ -108,15 +108,15 @@ jobs:
     - name: Clone source code
       run: |
         REPO_BRANCH="$(curl -s https://api.github.com/repos/openwrt/openwrt/tags | jq -r '.[].name' | grep v21 | head -n 1 | sed -e 's/v//')"
-        if [ ${{matrix.target}} == "ac2100" ]; then
+        if [ ${{matrix.target}} == "mipsel_24kc" ]; then
             curl -fL -m 60 -o sdk.tar.xz https://downloads.openwrt.org/releases/$REPO_BRANCH/targets/ramips/mt7621/openwrt-sdk-$REPO_BRANCH-ramips-mt7621_gcc-8.4.0_musl.Linux-x86_64.tar.xz
         elif [[ ${{matrix.target}} == "x86_64" ]]; then
             curl -fL -m 60 -o sdk.tar.xz https://downloads.openwrt.org/releases/$REPO_BRANCH/targets/x86/64/openwrt-sdk-$REPO_BRANCH-x86-64_gcc-8.4.0_musl.Linux-x86_64.tar.xz || curl -fL -m 60 -o sdk.tar.xz https://openwrt.tetaneutral.net/releases/21.02-SNAPSHOT/targets/x86/64/openwrt-sdk-21.02-SNAPSHOT-x86-64_gcc-8.4.0_musl.Linux-x86_64.tar.xz
-        elif [[ ${{matrix.target}} == "nanopi-r2s" ]]; then
+        elif [[ ${{matrix.target}} == "aarch64_generic" ]]; then
             curl -fL -m 60 -o sdk.tar.xz https://downloads.openwrt.org/releases/$REPO_BRANCH/targets/rockchip/armv8/openwrt-sdk-$REPO_BRANCH-rockchip-armv8_gcc-8.4.0_musl.Linux-x86_64.tar.xz || curl -fL -m 60 -o sdk.tar.xz https://openwrt.tetaneutral.net/releases/21.02-SNAPSHOT/targets/rockchip/armv8/openwrt-sdk-21.02-SNAPSHOT-rockchip-armv8_gcc-8.4.0_musl.Linux-x86_64.tar.xz
-        elif [[ ${{matrix.target}} == "Rpi-4B" ]]; then
+        elif [[ ${{matrix.target}} == "aarch64_cortex-a72" ]]; then
             curl -fL -m 60 -o sdk.tar.xz https://downloads.openwrt.org/releases/$REPO_BRANCH/targets/bcm27xx/bcm2711/openwrt-sdk-$REPO_BRANCH-bcm27xx-bcm2711_gcc-8.4.0_musl.Linux-x86_64.tar.xz || curl -fL -m 60 -o sdk.tar.xz https://openwrt.tetaneutral.net/releases/21.02-SNAPSHOT/targets/bcm27xx/bcm2711/openwrt-sdk-21.02-SNAPSHOT-bcm27xx-bcm2711_gcc-8.4.0_musl.Linux-x86_64.tar.xz
-        elif [[ ${{matrix.target}} == "N1" ]]; then
+        elif [[ ${{matrix.target}} == "aarch64_cortex-a53" ]]; then
             curl -fL -m 60 -o sdk.tar.xz https://downloads.openwrt.org/releases/$REPO_BRANCH/targets/armvirt/64/openwrt-sdk-$REPO_BRANCH-armvirt-64_gcc-8.4.0_musl.Linux-x86_64.tar.xz || curl -fL -m 60 -o sdk.tar.xz https://openwrt.tetaneutral.net/releases/21.02-SNAPSHOT/targets/armvirt/64/openwrt-sdk-21.02-SNAPSHOT-armvirt-64_gcc-8.4.0_musl.Linux-x86_64.tar.xz
         fi
 
@@ -183,7 +183,7 @@ jobs:
       run: |
         cd openwrt
           echo -e "$(($(nproc)+1)) thread compile"
-          fpkg="$(echo "${{github.event.action}}" | sed -e 's/\(aarch64_generic\|x86_64\|aarch64_cortex-a72\|aarch64_cortex-a53\|nanopi-r2s\|Rpi-4B\|N1\|ac2100\| [0-9][0-9.]*\| ssh\| noser\| cw\)//g' | sed -e 's/ //g')"
+          fpkg="$(echo "${{github.event.action}}" | sed -e 's/\(aarch64_generic\|x86_64\|aarch64_cortex-a72\|aarch64_cortex-a53\| [0-9][0-9.]*\| ssh\| noser\| cw\)//g' | sed -e 's/ //g')"
           during="$(echo "${{github.event.action}}" | grep -o -E ' [0-9][0-9.]*' | sed -e 's/ //')"
           function comp(){
              cp -rf kiddin9.b/$ipk package/feeds/kiddin9/
