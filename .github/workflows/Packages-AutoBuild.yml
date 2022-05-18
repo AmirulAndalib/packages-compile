@@ -62,17 +62,6 @@ jobs:
         echo "UPLOAD_FIRMWARE_FOR_RELEASE=${UPLOAD_FIRMWARE_FOR_RELEASE}" >> $GITHUB_ENV
         echo "UPLOAD_FIRMWARE_TO_COWTRANSFER=${UPLOAD_FIRMWARE_TO_COWTRANSFER}" >> $GITHUB_ENV
         echo "UPLOAD_FIRMWARE_TO_WETRANSFER=${UPLOAD_FIRMWARE_TO_WETRANSFER}" >> $GITHUB_ENV
-        if [ ${{matrix.target}} == "ac2100" ]; then
-            echo "MTARGET=mipsel_24kc" >> $GITHUB_ENV
-        elif [ ${{matrix.target}} == "x86_64" ]; then
-            echo "MTARGET=x86_64" >> $GITHUB_ENV
-        elif [ ${{matrix.target}} == "Rpi-4B" ]; then
-            echo "MTARGET=aarch64_cortex-a72" >> $GITHUB_ENV
-         elif [ ${{matrix.target}} == "nanopi-r2s" ]; then
-            echo "MTARGET=aarch64_generic" >> $GITHUB_ENV
-         elif [ ${{matrix.target}} == "N1" ]; then
-            echo "MTARGET=aarch64_cortex-a53" >> $GITHUB_ENV
-        fi
 
     - name: Trigger Packages Update
       run: |
@@ -107,17 +96,17 @@ jobs:
 
     - name: Clone source code
       run: |
-        REPO_BRANCH="$(curl -s https://api.github.com/repos/openwrt/openwrt/tags | jq -r '.[].name' | grep v21 | head -n 1 | sed -e 's/v//')"
-        if [ ${{matrix.target}} == "ac2100" ]; then
-            curl -fL -m 60 -o sdk.tar.xz https://downloads.openwrt.org/releases/$REPO_BRANCH/targets/ramips/mt7621/openwrt-sdk-$REPO_BRANCH-ramips-mt7621_gcc-8.4.0_musl.Linux-x86_64.tar.xz
+        REPO_BRANCH="$(curl -s https://api.github.com/repos/openwrt/openwrt/tags | jq -r '.[].name' | grep v22 | head -n 1 | sed -e 's/v//')"
+        if [ ${{matrix.target}} == "mipsel_24kc" ]; then
+            curl -fL -m 60 -o sdk.tar.xz https://downloads.openwrt.org/releases/$REPO_BRANCH/targets/ramips/mt7621/openwrt-sdk-$REPO_BRANCH-ramips-mt7621_gcc-11.2.0_musl.Linux-x86_64.tar.xz
         elif [[ ${{matrix.target}} == "x86_64" ]]; then
-            curl -fL -m 60 -o sdk.tar.xz https://downloads.openwrt.org/releases/$REPO_BRANCH/targets/x86/64/openwrt-sdk-$REPO_BRANCH-x86-64_gcc-8.4.0_musl.Linux-x86_64.tar.xz || curl -fL -m 60 -o sdk.tar.xz https://openwrt.tetaneutral.net/releases/21.02-SNAPSHOT/targets/x86/64/openwrt-sdk-21.02-SNAPSHOT-x86-64_gcc-8.4.0_musl.Linux-x86_64.tar.xz
-        elif [[ ${{matrix.target}} == "nanopi-r2s" ]]; then
-            curl -fL -m 60 -o sdk.tar.xz https://downloads.openwrt.org/releases/$REPO_BRANCH/targets/rockchip/armv8/openwrt-sdk-$REPO_BRANCH-rockchip-armv8_gcc-8.4.0_musl.Linux-x86_64.tar.xz || curl -fL -m 60 -o sdk.tar.xz https://openwrt.tetaneutral.net/releases/21.02-SNAPSHOT/targets/rockchip/armv8/openwrt-sdk-21.02-SNAPSHOT-rockchip-armv8_gcc-8.4.0_musl.Linux-x86_64.tar.xz
-        elif [[ ${{matrix.target}} == "Rpi-4B" ]]; then
-            curl -fL -m 60 -o sdk.tar.xz https://downloads.openwrt.org/releases/$REPO_BRANCH/targets/bcm27xx/bcm2711/openwrt-sdk-$REPO_BRANCH-bcm27xx-bcm2711_gcc-8.4.0_musl.Linux-x86_64.tar.xz || curl -fL -m 60 -o sdk.tar.xz https://openwrt.tetaneutral.net/releases/21.02-SNAPSHOT/targets/bcm27xx/bcm2711/openwrt-sdk-21.02-SNAPSHOT-bcm27xx-bcm2711_gcc-8.4.0_musl.Linux-x86_64.tar.xz
-        elif [[ ${{matrix.target}} == "N1" ]]; then
-            curl -fL -m 60 -o sdk.tar.xz https://downloads.openwrt.org/releases/$REPO_BRANCH/targets/armvirt/64/openwrt-sdk-$REPO_BRANCH-armvirt-64_gcc-8.4.0_musl.Linux-x86_64.tar.xz || curl -fL -m 60 -o sdk.tar.xz https://openwrt.tetaneutral.net/releases/21.02-SNAPSHOT/targets/armvirt/64/openwrt-sdk-21.02-SNAPSHOT-armvirt-64_gcc-8.4.0_musl.Linux-x86_64.tar.xz
+            curl -fL -m 60 -o sdk.tar.xz https://downloads.openwrt.org/releases/$REPO_BRANCH/targets/x86/64/openwrt-sdk-$REPO_BRANCH-x86-64_gcc-11.2.0_musl.Linux-x86_64.tar.xz
+        elif [[ ${{matrix.target}} == "aarch64_generic" ]]; then
+            curl -fL -m 60 -o sdk.tar.xz https://downloads.openwrt.org/releases/$REPO_BRANCH/targets/rockchip/armv8/openwrt-sdk-$REPO_BRANCH-rockchip-armv8_gcc-11.2.0_musl.Linux-x86_64.tar.xz
+        elif [[ ${{matrix.target}} == "aarch64_cortex-a72" ]]; then
+            curl -fL -m 60 -o sdk.tar.xz https://downloads.openwrt.org/releases/$REPO_BRANCH/targets/bcm27xx/bcm2711/openwrt-sdk-$REPO_BRANCH-bcm27xx-bcm2711_gcc-11.2.0_musl.Linux-x86_64.tar.xz
+        elif [[ ${{matrix.target}} == "aarch64_cortex-a53" ]]; then
+            curl -fL -m 60 -o sdk.tar.xz https://downloads.openwrt.org/releases/$REPO_BRANCH/targets/armvirt/64/openwrt-sdk-$REPO_BRANCH-armvirt-64_gcc-11.2.0_musl.Linux-x86_64.tar.xz
         fi
 
     - name: Free up disk space
@@ -183,13 +172,13 @@ jobs:
       run: |
         cd openwrt
           echo -e "$(($(nproc)+1)) thread compile"
-          fpkg="$(echo "${{github.event.action}}" | sed -e 's/\(aarch64_generic\|x86_64\|aarch64_cortex-a72\|aarch64_cortex-a53\|nanopi-r2s\|Rpi-4B\|N1\|ac2100\| [0-9][0-9.]*\| ssh\| noser\| cw\)//g' | sed -e 's/ //g')"
+          fpkg="$(echo "${{github.event.action}}" | sed -e 's/\(aarch64_generic\|x86_64\|aarch64_cortex-a72\|mipsel_24kc\|aarch64_cortex-a53\| [0-9][0-9.]*\| ssh\| noser\| cw\)//g' | sed -e 's/ //g')"
           during="$(echo "${{github.event.action}}" | grep -o -E ' [0-9][0-9.]*' | sed -e 's/ //')"
           function comp(){
              cp -rf kiddin9.b/$ipk package/feeds/kiddin9/
              if [[ $ipk != luci-* ]]; then
               mv -f feeds/packages.b feeds/packages
-              [ "$(grep -E "(PKG_BUILD_DEPENDS|packages/lang|meson.mk)" package/feeds/kiddin9/$ipk/Makefile)" ] && mv-f feeds/packages/lang.b feeds/packages/lang
+              [ "$(grep -E "(PKG_BUILD_DEPENDS|packages/lang|meson.mk)" package/feeds/kiddin9/$ipk/Makefile)" ] && mv -f feeds/packages/lang.b feeds/packages/lang
              fi
              make package/$ipk/compile -j$(($(nproc)+1)) || make package/$ipk/compile V=s >>error_$ipk.log 2>&1 || true
              if [[ $ipk != luci-* ]]; then
@@ -225,16 +214,16 @@ jobs:
       run: |
         mkdir packages
         mv -f openwrt/bin/packages/*/kiddin9/* packages || true
-        mv -f openwrt/.config packages/${{ env.MTARGET }}.config || true
+        mv -f openwrt/.config packages/${{matrix.target}}.config || true
         mv -f openwrt/bin/targets/*/*/packages/base-files* packages/ || true
         # cp -Rf openwrt/bin/packages/*/packages/python3* packages/
         echo "FIRMWARE=$PWD/packages" >> $GITHUB_ENV
         Emoji=("🎉" "🤞" "✨" "🎁" "🎈" "🎄" "🎨" "💋" "🍓" "🍕" "🍉" "💐" "🌴" "🚀" "🛸" "🗽" "⛅" "🌈" "🔥" "⛄" "🐶" "🏅" "🦄" "🐤")
         echo "EMOJI=${Emoji[$[$RANDOM % ${#Emoji[@]}]]}" >> $GITHUB_ENV
         if [[ $(ls -l openwrt/error* | grep "^-" | wc -l) -le 0 ]]; then
-           echo "NAME=${Emoji[$[$RANDOM % ${#Emoji[@]}]]} ${{ env.date2 }} ${{ env.MTARGET }} ${{ env.EMOJI }}" >> $GITHUB_ENV
+           echo "NAME=${Emoji[$[$RANDOM % ${#Emoji[@]}]]} ${{ env.date2 }} ${{matrix.target}} ${{ env.EMOJI }}" >> $GITHUB_ENV
         else
-           echo "NAME=❌ ${{ env.date2 }} ${{ env.MTARGET }} ❌" >> $GITHUB_ENV
+           echo "NAME=❌ ${{ env.date2 }} ${{matrix.target}} ❌" >> $GITHUB_ENV
         fi
 
     - name: Upload firmware to cowtransfer
@@ -263,7 +252,7 @@ jobs:
       continue-on-error: true
       run: |
         echo -e "墙内加速下载 🚀:\n" >> release.txt
-        echo -e "[腾讯云] (https://op.supes.top/packages/${{ env.MTARGET }}/ ☁)\n" >> release.txt
+        echo -e "[腾讯云] (https://op.supes.top/packages/${{matrix.target}}/ ☁)\n" >> release.txt
         [ ${{ env.WETRANS }} ] && echo -e "[WeTransfer] (${{ env.WETRANS }} 🗽)\n" >> release.txt
         [ ${{ env.COWURL }} ] && echo -e "[奶牛上传] (${{ env.COWURL }} 🐮)\n" >> release.txt
         [ ${{ env.NOTICE }} ] && echo -e "${{ env.NOTICE }}" >> release.txt || true
@@ -279,7 +268,7 @@ jobs:
             ${{ env.FIRMWARE }}/*
             openwrt/error*.log
         name: ${{ env.NAME }}
-        tag_name: ${{ env.date }}_${{ env.MTARGET }}
+        tag_name: ${{ env.date }}_${{matrix.target}}
         body_path: release.txt
 
     - name: Upload packages for artifact
@@ -287,7 +276,7 @@ jobs:
       continue-on-error: true
       if: env.UPLOAD_FIRMWARE_FOR_ARTIFACT == 'true'
       with:
-        name: ${{ env.date3 }} ${{ env.MTARGET }}
+        name: ${{ env.date3 }} ${{matrix.target}}
         path: ${{ env.FIRMWARE }}
 
     - name: deploy files to server
@@ -299,7 +288,7 @@ jobs:
         SOURCE: "packages/"
         REMOTE_HOST: op.supes.top
         REMOTE_USER: root
-        TARGET: "/www/wwwroot/op.supes.top/packages/${{ env.MTARGET }}/"
+        TARGET: "/www/wwwroot/op.supes.top/packages/${{matrix.target}}/"
 
     - name: remote ssh command
       uses: appleboy/ssh-action@master
@@ -309,9 +298,9 @@ jobs:
         username: root
         key: ${{ env.SSH_PRIVATE_KEY }}
         script: |
-          # cp -R /www/wwwroot/op.supes.top/packages/keep/common/* /www/wwwroot/op.supes.top/packages/${{ env.MTARGET }}/
-          # cp -R /www/wwwroot/op.supes.top/packages/keep/${{ env.MTARGET }}/* /www/wwwroot/op.supes.top/packages/${{ env.MTARGET }}/
-          opkg ${{ env.MTARGET }} &
+          # cp -R /www/wwwroot/op.supes.top/packages/keep/common/* /www/wwwroot/op.supes.top/packages/${{matrix.target}}/
+          # cp -R /www/wwwroot/op.supes.top/packages/keep/${{matrix.target}}/* /www/wwwroot/op.supes.top/packages/${{matrix.target}}/
+          opkg ${{matrix.target}} &
 
     - name: Delete workflow runs
       uses: GitRML/delete-workflow-runs@main
