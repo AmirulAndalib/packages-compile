@@ -179,7 +179,7 @@ jobs:
              cp -rf kiddin9.b/$ipk package/feeds/kiddin9/
              if [[ $ipk != luci-* ]]; then
               mv -f feeds/packages.b feeds/packages
-              [ "$(grep -E "(PKG_BUILD_DEPENDS|packages/lang|meson.mk)" package/feeds/kiddin9/$ipk/Makefile)" ] && mv -f feeds/packages/lang.b feeds/packages/lang
+              mv -f feeds/packages/lang.b feeds/packages/lang
              fi
              make package/$ipk/compile -j$(($(nproc)+1)) || make package/$ipk/compile V=s >>error_$ipk.log 2>&1 || true
              if [[ $ipk != luci-* ]]; then
