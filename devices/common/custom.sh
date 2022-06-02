@@ -8,7 +8,20 @@ do
 	[[ "$(grep "KernelPackage" "$ipk/Makefile")" && ! "$(grep "BuildPackage" "$ipk/Makefile")" ]] && rm -rf $ipk || true
 done
 
-
+rm -Rf feeds/luci/{applications,collections,protocols,themes,libs,docs,contrib}
+rm -Rf feeds/luci/modules/!(luci-base)
+# rm -rf feeds/packages/libs/!(libev|c-ares|cjson|boost|lib*|expat|tiff|freetype|udns|pcre2)
+rm -Rf feeds/packages/!(lang|libs|devel|utils|net|multimedia)
+rm -Rf feeds/packages/multimedia/!(gstreamer1)
+rm -Rf feeds/packages/utils/!(pcsc-lite|xz)
+rm -Rf feeds/packages/net/!(mosquitto|curl)
+rm -Rf feeds/base/package/{firmware}
+rm -Rf feeds/base/package/network/!(services|utils)
+rm -Rf feeds/base/package/network/services/!(ppp)
+rm -Rf feeds/base/package/network/utils/!(iwinfo|iptables)
+rm -Rf feeds/base/package/utils/!(util-linux|lua)
+rm -Rf feeds/base/package/system/!(opkg|ubus|uci|ca-certificates)
+rm -Rf feeds/base/package/kernel/!(cryptodev-linux)
 
 ./scripts/feeds update -a
 ./scripts/feeds install -a -p kiddin9 -f
