@@ -184,7 +184,7 @@ jobs:
              if [[ $ipk != luci-* ]]; then
               mv -f feeds/packages.b feeds/packages
               mv feeds/packages/lang.b feeds/packages/lang
-              [ "$(grep "node" package/feeds/kiddin9/$ipk/Makefile)" ] || mv feeds/packages/lang/node feeds/packages/lang/node.b
+              [ "$(grep "PKG_BUILD_DEPENDS" package/feeds/kiddin9/$ipk/Makefile)" ] || mv feeds/packages/lang/node feeds/packages/lang/node.b
              fi
              make package/$ipk/compile -j$(($(nproc)+1)) || make package/$ipk/compile V=s >>error_$ipk.log 2>&1 || true
              if [[ $ipk != luci-* ]]; then
