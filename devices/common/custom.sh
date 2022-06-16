@@ -8,7 +8,7 @@ do
 	[[ "$(grep "KernelPackage" "$ipk/Makefile")" && ! "$(grep "BuildPackage" "$ipk/Makefile")" ]] && rm -rf $ipk || true
 done
 
-<<'COMMENT'
+#<<'COMMENT'
 rm -Rf feeds/luci/{applications,collections,protocols,themes,libs,docs,contrib}
 rm -Rf feeds/luci/modules/!(luci-base)
 rm -rf feeds/packages/libs/avahi
@@ -23,7 +23,7 @@ rm -Rf feeds/base/package/network/utils/!(iwinfo|iptables)
 rm -Rf feeds/base/package/utils/!(util-linux|lua)
 rm -Rf feeds/base/package/system/!(opkg|ubus|uci|ca-certificates)
 rm -Rf feeds/base/package/kernel/!(cryptodev-linux)
-COMMENT
+#COMMENT
 
 ./scripts/feeds update -a
 ./scripts/feeds install -a -p kiddin9 -f
