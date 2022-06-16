@@ -11,10 +11,10 @@ done
 #<<'COMMENT'
 rm -Rf feeds/luci/{applications,collections,protocols,themes,libs,docs,contrib}
 rm -Rf feeds/luci/modules/!(luci-base)
-# rm -rf feeds/packages/libs/!(libev|c-ares|cjson|boost|lib*|expat|tiff|freetype|udns|pcre2)
+rm -rf feeds/packages/libs/avahi
 rm -Rf feeds/packages/!(lang|libs|devel|utils|net|multimedia)
-rm -Rf feeds/packages/multimedia/!(gstreamer1)
-rm -Rf feeds/packages/utils/!(pcsc-lite|xz|dbus)
+rm -Rf feeds/packages/multimedia/!(gstreamer1,ffmpeg)
+rm -Rf feeds/packages/utils/!(pcsc-lite|xz)
 rm -Rf feeds/packages/net/!(mosquitto|curl)
 rm -Rf feeds/base/package/{firmware}
 rm -Rf feeds/base/package/network/!(services|utils)
