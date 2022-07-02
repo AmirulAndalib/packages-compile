@@ -102,7 +102,7 @@ jobs:
         REPO_BRANCH="22.03-SNAPSHOT"
         if [ ${{matrix.target}} == "mipsel_24kc" ]; then
             curl -fL -m 60 -o sdk.tar.xz https://downloads.openwrt.org/releases/$REPO_BRANCH/targets/ramips/mt7621/openwrt-sdk-$REPO_BRANCH-ramips-mt7621_gcc-11.2.0_musl.Linux-x86_64.tar.xz
-        if [ ${{matrix.target}} == "mips_24kc" ]; then
+        elif [ ${{matrix.target}} == "mips_24kc" ]; then
             curl -fL -m 60 -o sdk.tar.xz https://downloads.openwrt.org/releases/$REPO_BRANCH/targets/ath79/generic//openwrt-sdk-$REPO_BRANCH-ath79-generic_gcc-11.2.0_musl.Linux-x86_64.tar.xz
         elif [[ ${{matrix.target}} == "x86_64" ]]; then
             curl -fL -m 60 -o sdk.tar.xz https://downloads.openwrt.org/releases/$REPO_BRANCH/targets/x86/64/openwrt-sdk-$REPO_BRANCH-x86-64_gcc-11.2.0_musl.Linux-x86_64.tar.xz
