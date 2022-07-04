@@ -14,13 +14,11 @@ rm -Rf feeds/luci/modules/!(luci-base)
 rm -rf feeds/packages/libs/avahi
 rm -Rf feeds/packages/!(lang|libs|devel|utils|net|multimedia)
 rm -Rf feeds/packages/multimedia/!(gstreamer1|ffmpeg)
-rm -Rf feeds/packages/utils/!(pcsc-lite|xz|zstd)
 rm -Rf feeds/packages/net/!(mosquitto|curl)
 rm -Rf feeds/base/package/{firmware}
 rm -Rf feeds/base/package/network/!(services|utils)
 rm -Rf feeds/base/package/network/services/!(ppp)
 rm -Rf feeds/base/package/network/utils/!(iwinfo|iptables)
-rm -Rf feeds/base/package/utils/!(util-linux|lua)
 rm -Rf feeds/base/package/system/!(opkg|ubus|uci|ca-certificates)
 rm -Rf feeds/base/package/kernel/!(cryptodev-linux)
 #COMMENT
