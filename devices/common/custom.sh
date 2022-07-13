@@ -18,7 +18,6 @@ rm -Rf feeds/packages/net/!(mosquitto|curl)
 rm -Rf feeds/base/package/{firmware}
 rm -Rf feeds/base/package/network/!(services|utils)
 rm -Rf feeds/base/package/network/services/!(ppp)
-rm -Rf feeds/base/package/network/utils/!(iwinfo|iptables)
 rm -Rf feeds/base/package/system/!(opkg|ubus|uci|ca-certificates)
 rm -Rf feeds/base/package/kernel/!(cryptodev-linux)
 #COMMENT
