@@ -30,11 +30,6 @@ cd feeds/kiddin9; git pull; cd -
 sed -i 's/\(page\|e\)\?.acl_depends.*\?}//' `find package/feeds/kiddin9/luci-*/luasrc/controller/* -name "*.lua"`
 # sed -i 's/\/cgi-bin\/\(luci\|cgi-\)/\/\1/g' `find package/feeds/kiddin9/luci-*/ -name "*.lua" -or -name "*.htm*" -or -name "*.js"` &
 sed -i 's/Os/O2/g' include/target.mk
-#rm -rf ./feeds/packages/lang/golang
-#svn co https://github.com/immortalwrt/packages/trunk/lang/golang feeds/packages/lang/golang
-
-sed -i '/root:/c\root:$1$tTPCBw1t$ldzfp37h5lSpO9VXk4uUE\/:18336:0:99999:7:::' package/feeds/kiddin9/base-files/files/etc/shadow
-sed -i "s/tty1::askfirst/tty1::respawn/g" target/linux/*/base-files/etc/inittab
 
 sed -i \
 	-e "s/+\(luci\|luci-ssl\|uhttpd\)\( \|$\)/\2/" \
@@ -44,18 +39,8 @@ sed -i \
 	-e 's,$(STAGING_DIR_HOST)/bin/upx,upx,' \
 	package/feeds/kiddin9/*/Makefile
 
-date=`date +%m.%d.%Y`
-sed -i -e "/\(# \)\?REVISION:=/c\REVISION:=$date" -e '/VERSION_CODE:=/c\VERSION_CODE:=$(REVISION)' include/version.mk
-
 cp -f devices/common/.config .config
-mv feeds/base feeds/base.bak
-mv feeds/packages feeds/packages.bak
 make defconfig
-rm -Rf tmp
-mv feeds/base.bak feeds/base
-mv feeds/packages.bak feeds/packages
-sed -i 's/CONFIG_ALL=y/CONFIG_ALL=n/' .config
-sed -i '/PACKAGE_kmod-/d' .config
 
 sed -i "/mediaurlbase/d" package/feeds/*/luci-theme*/root/etc/uci-defaults/*
 
