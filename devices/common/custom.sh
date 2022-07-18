@@ -39,9 +39,6 @@ sed -i \
 	-e 's,$(STAGING_DIR_HOST)/bin/upx,upx,' \
 	package/feeds/kiddin9/*/Makefile
 
-cp -f devices/common/.config .config
-make defconfig
-
 sed -i "/mediaurlbase/d" package/feeds/*/luci-theme*/root/etc/uci-defaults/*
 
 sed -i '/WARNING: Makefile/d' scripts/package-metadata.pl
