@@ -106,6 +106,8 @@ jobs:
             curl -fL -m 120 -o sdk.tar.xz https://downloads.openwrt.org/releases/$REPO_BRANCH/targets/x86/64/openwrt-sdk-$REPO_BRANCH-x86-64_gcc-11.2.0_musl.Linux-x86_64.tar.xz
         elif [[ ${{matrix.target}} == "aarch64_generic" ]]; then
             curl -fL -m 120 -o sdk.tar.xz https://downloads.openwrt.org/releases/$REPO_BRANCH/targets/rockchip/armv8/openwrt-sdk-$REPO_BRANCH-rockchip-armv8_gcc-11.2.0_musl.Linux-x86_64.tar.xz
+        elif [[ ${{matrix.target}} == "arm_cortex-a5_vfpv4" ]]; then
+            curl -fL -m 120 -o sdk.tar.xz https://downloads.openwrt.org/releases/$REPO_BRANCH/targets/at91/sama5/openwrt-sdk-$REPO_BRANCH-at91-sama5_gcc-11.2.0_musl.Linux-x86_64.tar.xz
         elif [[ ${{matrix.target}} == "aarch64_cortex-a72" ]]; then
             curl -fL -m 120 -o sdk.tar.xz https://downloads.openwrt.org/releases/$REPO_BRANCH/targets/bcm27xx/bcm2711/openwrt-sdk-$REPO_BRANCH-bcm27xx-bcm2711_gcc-11.2.0_musl.Linux-x86_64.tar.xz
         elif [[ ${{matrix.target}} == "aarch64_cortex-a53" ]]; then
@@ -181,7 +183,7 @@ jobs:
       run: |
         cd openwrt
           echo -e "$(($(nproc)+1)) thread compile"
-          fpkg="$(echo "${{github.event.action}}" | sed -e 's/\(aarch64_generic\|x86_64\|aarch64_cortex-a72\|arm_cortex-a7_neon-vfpv4\|arm_cortex-a9\|mipsel_24kc\|aarch64_cortex-a53\|arm_cortex-a9_vfpv3-d16\| [0-9][0-9.]*\| ssh\| noser\| cw\)//g' | sed -e 's/ //g')"
+          fpkg="$(echo "${{github.event.action}}" | sed -e 's/\(aarch64_generic\|x86_64\|aarch64_cortex-a72\|arm_cortex-a7_neon-vfpv4\|arm_cortex-a9\|arm_cortex-a5_vfpv4\|mipsel_24kc\|aarch64_cortex-a53\|arm_cortex-a9_vfpv3-d16\| [0-9][0-9.]*\| ssh\| noser\| cw\)//g' | sed -e 's/ //g')"
           during="$(echo "${{github.event.action}}" | grep -o -E ' [0-9][0-9.]*' | sed -e 's/ //')"
           function comp(){
              cp -rf kiddin9.b/$ipk package/feeds/kiddin9/
