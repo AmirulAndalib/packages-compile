@@ -327,7 +327,7 @@ jobs:
         script: |
           # cp -R /www/wwwroot/op.supes.top/packages/keep/common/* /www/wwwroot/op.supes.top/packages/${{matrix.target}}/
           # cp -R /www/wwwroot/op.supes.top/packages/keep/${{matrix.target}}/* /www/wwwroot/op.supes.top/packages/${{matrix.target}}/
-          opkg ${{matrix.target}} &
+          bash opkg ${{matrix.target}} &
 
     - name: Delete workflow runs
       uses: GitRML/delete-workflow-runs@main
