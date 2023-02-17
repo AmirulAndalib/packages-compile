@@ -182,6 +182,11 @@ jobs:
 
     - name: Prepare
       run: |
+        status=$(curl -H "Authorization: token ${{ secrets.REPO_TOKEN_kiddin9 }}" -s "https://api.github.com/repos/kiddin9/openwrt-packages/actions/runs" | jq -r '.workflow_runs[0].status')
+        while [ "$status" == "in_progress" ];do
+          sleep 5
+          status=$(curl -H "Authorization: token ${{ secrets.REPO_TOKEN_kiddin9 }}" -s "https://api.github.com/repos/kiddin9/openwrt-packages/actions/runs" | jq -r '.workflow_runs[0].status')
+        done
         cd openwrt
         make defconfig
         mv -f package/feeds/kiddin9 kiddin9.b
