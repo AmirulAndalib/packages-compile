@@ -245,7 +245,6 @@ jobs:
         mkdir packages
         mv -f openwrt/bin/packages/*/kiddin9/* packages || true
         mv -f openwrt/.config packages/${{matrix.target}}.config || true
-        mv -f openwrt/bin/targets/*/*/packages/base-files* packages/ || true
         # cp -Rf openwrt/bin/packages/*/packages/python3* packages/
         echo "FIRMWARE=$PWD/packages" >> $GITHUB_ENV
         Emoji=("🎉" "🤞" "✨" "🎁" "🎈" "🎄" "🎨" "💋" "🍓" "🍕" "🍉" "💐" "🌴" "🚀" "🛸" "🗽" "⛅" "🌈" "🔥" "⛄" "🐶" "🏅" "🦄" "🐤")
