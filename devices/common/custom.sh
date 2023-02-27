@@ -8,20 +8,6 @@ do
 	[[ "$(grep "KernelPackage" "$ipk/Makefile")" && ! "$(grep "BuildPackage" "$ipk/Makefile")" ]] && rm -rf $ipk || true
 done
 
-<<'COMMENT'
-rm -Rf feeds/luci/{applications,collections,protocols,themes,libs,docs,contrib}
-rm -Rf feeds/luci/modules/!(luci-base)
-rm -Rf feeds/packages/!(lang|libs|devel|utils|net|multimedia)
-rm -Rf feeds/packages/multimedia/!(gstreamer1|ffmpeg)
-rm -Rf feeds/packages/libs/libcups
-rm -Rf feeds/packages/net/!(mosquitto|curl)
-rm -Rf feeds/base/package/{firmware}
-rm -Rf feeds/base/package/network/!(services|utils)
-rm -Rf feeds/base/package/network/services/!(ppp)
-rm -Rf feeds/base/package/system/!(opkg|ubus|uci|ca-certificates)
-rm -Rf feeds/base/package/kernel/!(cryptodev-linux)
-COMMENT
-
 status=$(curl -H "Authorization: token $REPO_TOKEN" -s "https://api.github.com/repos/kiddin9/openwrt-packages/actions/runs" | jq -r '.workflow_runs[0].status')
 while [ "$status" == "in_progress" ];do
 sleep 5
