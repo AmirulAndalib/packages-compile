@@ -193,7 +193,7 @@ jobs:
         mv -f feeds/packages/lang feeds/packages/lang.b
         mv -f feeds/packages feeds/packages.b
         mkdir package/feeds/kiddin9
-        cp -rf kiddin9.b/{wxbase,lib*,rapidjson,jpcre2,toml11,quickjspp,qtbase,qttools,rblibtorrent,openssl,mbedtls,ppp} package/feeds/kiddin9/
+        cp -rf kiddin9.b/{wxbase,lib*,rapidjson,jpcre2,toml11,quickjspp,qtbase,qttools,rblibtorrent,openssl,mbedtls,ppp} package/feeds/kiddin9/ || true
 
     - name: Compile the firmware
       run: |
@@ -245,7 +245,6 @@ jobs:
         mkdir packages
         mv -f openwrt/bin/packages/*/kiddin9/* packages || true
         mv -f openwrt/.config packages/${{matrix.target}}.config || true
-        mv -f openwrt/bin/targets/*/*/packages/base-files* packages/ || true
         # cp -Rf openwrt/bin/packages/*/packages/python3* packages/
         echo "FIRMWARE=$PWD/packages" >> $GITHUB_ENV
         Emoji=("🎉" "🤞" "✨" "🎁" "🎈" "🎄" "🎨" "💋" "🍓" "🍕" "🍉" "💐" "🌴" "🚀" "🛸" "🗽" "⛅" "🌈" "🔥" "⛄" "🐶" "🏅" "🦄" "🐤")
